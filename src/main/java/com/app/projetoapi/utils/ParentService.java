@@ -33,6 +33,9 @@ public abstract class ParentService<T> {
         }
     }
 
+    public void beforeUpdate(T object) {
+    }
+
     public Iterable<T> findAll() {
         return getRepository().findAll();
     }
@@ -53,16 +56,40 @@ public abstract class ParentService<T> {
         return (T) getRepository().findById(id).orElse(null);
     }
 
-    public T save(T object) {
+    public T saveUpdate(T object) {
+        validate(object);
+        T savedObject = null;
+        if (object instanceof ParentEntity){
+            if (((ParentEntity) object).getId() == null) {
+                savedObject = save(object);
+            } else {
+                beforeUpdate(object);
+                savedObject = update(object);
+            }
+        }
+        return savedObject;
+    }
+
+    private T save(T object) {
         validate(object);
         beforeSave(object);
-        T savedObject = getRepository().save(object);
-        return savedObject;
+        return getRepository().save(object);
+    }
+
+    private T update(T object) {
+        validate(object);
+        beforeUpdate(object);
+        return getRepository().save(object);
+    }
+
+    public Boolean canDelete(T object) {
+        return true;
     }
 
     public void deleteById(Integer id) {
         T object = findById(id);
-        getRepository().deleteById(id);
+        if (canDelete(object)) getRepository().deleteById(id);
+        else throw new RuntimeException("Cannot delete object with id " + id);
     }
 
     public List<Integer> deleteByIds(List<Integer> ids) {

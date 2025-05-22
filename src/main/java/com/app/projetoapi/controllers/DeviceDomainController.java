@@ -17,11 +17,11 @@ import java.util.List;
 @RequestMapping(value = "api/v1/device-domain")
 public class DeviceDomainController {
     @Autowired
-    private DeviceDomainService albumService;
+    private DeviceDomainService domainService;
 
     @GetMapping("/{id}")
     public DeviceDomain getById(@PathVariable Integer id) {
-        return albumService.findById(id);
+        return domainService.findById(id);
     }
 
     @GetMapping
@@ -30,29 +30,29 @@ public class DeviceDomainController {
             @RequestParam(required = false, name = "range") String rangeStr,
             @RequestParam(required = false, name = "sort") String sortStr
     ) {
-        return albumService.filterBy(filterStr, rangeStr, sortStr);
+        return domainService.filterBy(filterStr, rangeStr, sortStr);
     }
 
     @PostMapping
-    public DeviceDomain create(@RequestBody DeviceDomain album) {
-        return albumService.save(album);
+    public DeviceDomain create(@RequestBody DeviceDomain deviceDomain) {
+        return domainService.saveUpdate(deviceDomain);
     }
 
     @PutMapping("/{id}")
-    public DeviceDomain update(@PathVariable Integer id, @RequestBody DeviceDomain album) {
-        if (!album.getId().equals(id)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id do album não confere com o id da requisição");
+    public DeviceDomain update(@PathVariable Integer id, @RequestBody DeviceDomain deviceDomain) {
+        if (!deviceDomain.getId().equals(id)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return albumService.save(album);
+        return domainService.saveUpdate(deviceDomain);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
-        albumService.deleteById(id);
+        domainService.deleteById(id);
     }
 
     @DeleteMapping
     public List<Integer> deleteByIds(@Valid @RequestBody List<Integer> ids) {
-        return albumService.deleteByIds(ids);
+        return domainService.deleteByIds(ids);
     }
 }
