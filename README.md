@@ -16,7 +16,7 @@ To run the application, use the following command:
 mvn spring-boot:run
 ```
 
-## Docker
+## Run using docker
 Build and run the Dockerfile
 
 ## Testing
@@ -25,3 +25,4 @@ Those tests are executed automatically when you deploy the application. To run t
 
 ```sh
 mvn clean test
+```
