@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,8 +20,6 @@ public class DeviceDomainService extends ParentService<DeviceDomain> {
 
     @Autowired
     private DeviceDomainRepository repository;
-    @Autowired
-    private FilterService<DeviceDomain, Integer> filterService;
 
     @Override
     public BaseRepository<DeviceDomain, Integer> getRepository() {
@@ -37,26 +37,37 @@ public class DeviceDomainService extends ParentService<DeviceDomain> {
             if (updatedDevice.getState().equals(StateEnum.INUSE)){
                 if (!updatedDevice.getName().equals(existingDevice.getName()) ||
                         !updatedDevice.getBrand().equals(existingDevice.getBrand())) {
-                    throw new RuntimeException("You cannot change the name or brand of a device that is in use.");
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "You cannot change the name or brand of a device that is in use.");
                 }
             }
+            updatedDevice.setCreatedAt(existingDevice.getCreatedAt());
         }
     }
 
     @Override
     public Boolean canDelete(DeviceDomain object) {
         if (object.getState().equals(StateEnum.INUSE)){
-            throw new RuntimeException("You cannot delete a device that is in use.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You cannot delete a device that is in use.");
         } else {
             return true;
         }
     }
 
-    @Override
-    public Iterable<DeviceDomain> filterBy(String filterStr, String rangeStr, String sortStr) {
-        QueryParamWrapper wrapper = QueryParamExtractor.extract(filterStr, rangeStr, sortStr);
-        // este searchFields é uma lista de campos que serão usados para filtrar a busca
-        List<String> searchFields = List.of("name");
-        return filterService.filterBy(wrapper, getRepository(), searchFields);
+    public DeviceDomain partialUpdate(DeviceDomain deviceDomain) {
+        DeviceDomain existingDevice = findById(deviceDomain.getId());
+        if (existingDevice != null) {
+            if (deviceDomain.getName() != null) {
+                existingDevice.setName(deviceDomain.getName());
+            }
+            if (deviceDomain.getBrand() != null) {
+                existingDevice.setBrand(deviceDomain.getBrand());
+            }
+            if (deviceDomain.getState() != null) {
+                existingDevice.setState(deviceDomain.getState());
+            }
+            return saveUpdate(existingDevice);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found");
+        }
     }
 }
