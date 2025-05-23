@@ -44,14 +44,6 @@ public abstract class ParentService<T> {
         return this.filterBy(filterStr, rangeStr, sortStr, null, null);
     }
 
-    public Iterable<T> filterBy(String filterStr, String rangeStr, String sortStr, String campoPesquisa) {
-        return this.filterBy(filterStr, rangeStr, sortStr, campoPesquisa, null);
-    }
-
-    public Iterable<T> filterBy(String filterStr, String rangeStr, String sortStr, List<String> searchFields) {
-        return this.filterBy(filterStr, rangeStr, sortStr, null, searchFields);
-    }
-
     public T findById(Integer id) {
         return (T) getRepository().findById(id).orElse(null);
     }
@@ -98,7 +90,7 @@ public abstract class ParentService<T> {
     }
 
 
-    private Iterable<T> filterBy(String filterStr, String rangeStr, String sortStr, String campoPesquisa, List<String> searchFields) {
+    public Iterable<T> filterBy(String filterStr, String rangeStr, String sortStr, String campoPesquisa, List<String> searchFields) {
         QueryParamWrapper wrapper = QueryParamExtractor.extract(filterStr, rangeStr, sortStr);
         if (searchFields != null && !searchFields.isEmpty()) {
             return filterService.filterBy(wrapper, getRepository(), searchFields);

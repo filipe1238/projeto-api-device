@@ -16,7 +16,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeviceDomain extends ParentEntity {
-    @Column(unique = true)
     private String name;
     private String brand;
     private StateEnum state;
