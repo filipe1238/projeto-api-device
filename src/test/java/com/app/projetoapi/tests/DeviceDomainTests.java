@@ -3,6 +3,7 @@ package com.app.projetoapi.tests;
 
 import com.app.projetoapi.MainTestClass;
 import com.app.projetoapi.entity.DeviceDomain;
+import com.app.projetoapi.entity.StateEnum;
 
 public class DeviceDomainTests extends MainTestClass<DeviceDomain> {
     /**
@@ -19,7 +20,9 @@ public class DeviceDomainTests extends MainTestClass<DeviceDomain> {
      */
     @Override
     public DeviceDomain returnNewObject() {
-        return new DeviceDomain();
+        DeviceDomain deviceDomain = new DeviceDomain();
+        deviceDomain.setState(StateEnum.AVAILABLE);
+        return deviceDomain;
     }
 
     /**
